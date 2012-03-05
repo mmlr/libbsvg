@@ -1,0 +1,100 @@
+This is just a small example on how to use the BSVGView. It is the source for the bsvgviewer (a bit commented).
+
+1. Save to code to a file ("bsvgviewer.cpp")
+2. Copy or link all the libbsvg headers (in the "include" directory) to that folder
+3. Open a terminal and go to that same folder
+4. gcc bsvgviewer.cpp -lbe -lbsvg
+
+That's it. And the code shouldn't be any harder to understand.
+
+[code]
+#include <Application.h>
+#include <Window.h>
+#include <Entry.h>
+#include "SVGView.h"
+
+// class definitions; we only need a application and a window to hold the view
+class SVGWin;
+
+class SVGApp : public BApplication
+{
+	public:
+					SVGApp(const char *arg);
+virtual	void		RefsReceived(BMessage *message);
+
+		SVGWin		*fWin;
+};
+
+class SVGWin : public BWindow
+{
+	public:
+					SVGWin(BRect rect, const char *arg);
+		void		MessageReceived(BMessage *message);
+
+		BSVGView 	*fView;
+};
+
+// the main function just creates our application object and runs it
+int main(int argc, char **argv)
+{
+	SVGApp *app = new SVGApp(argv[1]);
+	app->Run();
+	delete app;
+}
+
+// app constructor that creates the window for our view
+SVGApp::SVGApp(const char *arg)
+	:	BApplication("application/x-vnd.mmlr.svgviewer")
+{
+	fWin = new SVGWin(BRect(100, 100, 275, 225), arg);
+	fWin->Show();
+}
+
+// if a file is opened from the tracker it's handled here
+void SVGApp::RefsReceived(BMessage *message)
+{
+	entry_ref ref;
+	if (message->FindRef("refs", &ref) != B_OK)
+		return;
+	
+	fWin->Lock();
+	fWin->fView->Clear();
+	fWin->fView->LoadFromFile(&ref);
+	fWin->Unlock();
+}
+
+// here is where it all happens - the BSVGView is created and set
+SVGWin::SVGWin(BRect rect, const char *arg)
+	:	BWindow(rect, "SVGWindow", B_TITLED_WINDOW, B_QUIT_ON_WINDOW_CLOSE)
+{
+	// create the BSVGView as if it were a normal BView
+	fView = new BSVGView(rect.OffsetToSelf(0, 0), "fView", B_FOLLOW_ALL);
+	
+	// set the basic settings of the BSVGView
+	fView->SetViewColor(50, 100, 150);
+	fView->SetScaleToFit(true);
+	fView->SetFitContent(true);
+	
+	// load the file if we got one as argument
+	fView->LoadFromFile(arg);
+	
+	AddChild(fView);
+}
+
+// files that are droped over the window are handeled here
+void SVGWin::MessageReceived(BMessage *message)
+{
+	switch (message->what) {
+		case B_SIMPLE_DATA:	{
+			entry_ref ref;
+			if (message->FindRef("refs", &ref) != B_OK)
+				return;
+			
+			fView->Clear();
+			fView->LoadFromFile(&ref);
+		} break;
+		
+		default: BWindow::MessageReceived(message);
+	}
+}
+[/code]

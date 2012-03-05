@@ -1,0 +1,9 @@
+#!/bin/sh
+
+cd `dirname $0`
+
+#gcc plugin.cpp npunix.c -I./include -nostart
+gcc npunix.c svgplugin.cpp -o svgplugin -I./include -I../ -lbsvg -lbe -nostart
+
+/bin/xres -o svgplugin svgplugin.rsrc
+/bin/mimeset -f svgplugin
