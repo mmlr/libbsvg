@@ -5,7 +5,10 @@
 
 BSVGRect::BSVGRect(BSVGView *parent)
 	:	BSVGPath(parent),
-		fRect(0, 0, 0, 0),
+		fX(0),
+		fY(0),
+		fWidth(0),
+		fHeight(0),
 		fRX(0),
 		fRY(0),
 		fRXSet(false),
@@ -16,7 +19,10 @@ BSVGRect::BSVGRect(BSVGView *parent)
 BSVGRect::BSVGRect(BMessage *data)
 	:	BSVGPath(data)
 {
-	data->FindRect("_rect", &fRect);
+	data->FindFloat("_x", &fX);
+	data->FindFloat("_y", &fY);
+	data->FindFloat("_width", &fWidth);
+	data->FindFloat("_height", &fHeight);
 	data->FindFloat("_rx", &fRX);
 	data->FindFloat("_ry", &fRY);
 	data->FindBool("_rxset", &fRXSet);
@@ -38,7 +44,10 @@ BSVGRect::Archive(BMessage *data, bool deep) const
 {
 	BSVGPath::Archive(data, deep);
 	
-	data->AddRect("_rect", fRect);
+	data->AddFloat("_x", fX);
+	data->AddFloat("_y", fY);
+	data->AddFloat("_width", fWidth);
+	data->AddFloat("_height", fHeight);
 	data->AddFloat("_rx", fRX);
 	data->AddFloat("_ry", fRY);
 	data->AddBool("_rxset", fRXSet);
@@ -78,40 +87,41 @@ BSVGRect::HandleAttribute(attribute_s *attr)
 void
 BSVGRect::FinalizeShape()
 {
-	if (fRXSet && fRX > fRect.Width() / 2)
-		fRX = fRect.Width() / 2;
-	if (fRYSet && fRY > fRect.Height() / 2)
-		fRY = fRect.Height() / 2;
+	if (fRXSet && fRX > fWidth / 2)
+		fRX = fWidth / 2;
+	if (fRYSet && fRY > fHeight / 2)
+		fRY = fHeight / 2;
 	
 	if (fRXSet && !fRYSet)
 		fRY = fRX;
 	else if (!fRXSet && fRYSet)
 		fRX = fRY;
 	
+	BRect rect(fX, fY, fX + fWidth, fY + fHeight);
 	if (fRXSet || fRYSet) {
 		BPoint radii(fRX, fRY);
-		BRect centers = fRect;
+		BRect centers = rect;
 		centers.InsetBy(fRX, fRY);
 		
-		fShape.MoveTo(BPoint(fRect.left + fRX, fRect.top));
+		fShape.MoveTo(BPoint(rect.left + fRX, rect.top));
 		
-		fShape.LineTo(BPoint(fRect.right - fRX, fRect.top));
+		fShape.LineTo(BPoint(rect.right - fRX, rect.top));
 		RoundArcTo(centers.RightTop(), radii, 0, -90, 90);
 		
-		fShape.LineTo(BPoint(fRect.right, fRect.bottom - fRY));
+		fShape.LineTo(BPoint(rect.right, rect.bottom - fRY));
 		RoundArcTo(centers.RightBottom(), radii, 0, 0, 90);
 		
-		fShape.LineTo(BPoint(fRect.left + fRX, fRect.bottom));
+		fShape.LineTo(BPoint(rect.left + fRX, rect.bottom));
 		RoundArcTo(centers.LeftBottom(), radii, 0, 90, 90);
 		
-		fShape.LineTo(BPoint(fRect.left, fRect.top + fRY));
+		fShape.LineTo(BPoint(rect.left, rect.top + fRY));
 		RoundArcTo(centers.LeftTop(), radii, 0, 180, 90);
 	} else {
-		fShape.MoveTo(fRect.LeftTop());
-		fShape.LineTo(fRect.RightTop());
-		fShape.LineTo(fRect.RightBottom());
-		fShape.LineTo(fRect.LeftBottom());
-		fShape.LineTo(fRect.LeftTop());
+		fShape.MoveTo(rect.LeftTop());
+		fShape.LineTo(rect.RightTop());
+		fShape.LineTo(rect.RightBottom());
+		fShape.LineTo(rect.LeftBottom());
+		fShape.LineTo(rect.LeftTop());
 	}
 	fShape.Close();
 }
@@ -123,10 +133,10 @@ BSVGRect::RecreateData()
 	AddID(fHeaderData);
 	fState.AddToString(&fHeaderData);
 	
-	fHeaderData << " x=\"" << fRect.LeftTop().x << "\"";
-	fHeaderData << " y=\"" << fRect.LeftTop().y << "\"";
-	fHeaderData << " width=\"" << fRect.Width() << "\"";
-	fHeaderData << " height=\"" << fRect.Height() << "\"";
+	fHeaderData << " x=\"" << fX << "\"";
+	fHeaderData << " y=\"" << fY << "\"";
+	fHeaderData << " width=\"" << fWidth << "\"";
+	fHeaderData << " height=\"" << fHeight << "\"";
 	
 	if (fRXSet)
 		fHeaderData << " rx=\"" << fRX << "\"";
@@ -140,25 +150,25 @@ BSVGRect::RecreateData()
 void
 BSVGRect::SetX(float x)
 {
-	fRect.left = x;
+	fX = x;
 }
 
 void
 BSVGRect::SetY(float y)
 {
-	fRect.top = y;
+	fY = y;
 }
 
 void
 BSVGRect::SetWidth(float width)
 {
-	fRect.right = fRect.left + width;
+	fWidth = width;
 }
 
 void
 BSVGRect::SetHeight(float height)
 {
-	fRect.bottom = fRect.top + height;
+	fHeight = height;
 }
 
 void

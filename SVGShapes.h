@@ -29,7 +29,10 @@ virtual	void			RecreateData();
 		void			SetRY(float ry);
 
 private:
-		BRect			fRect;
+		float			fX;
+		float			fY;
+		float			fWidth;
+		float			fHeight;
 		float			fRX;
 		float			fRY;
 		bool			fRXSet;
