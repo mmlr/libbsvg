@@ -56,7 +56,7 @@ RSRCS= bsvgfolderviewer.rsrc
 #		naming scheme you need to specify the path to the library
 #		and it's name
 #		library: my_lib.a entry: my_lib.a or path/my_lib.a
-LIBS= bsvg be
+LIBS= bsvg be stdc++
 
 #	specify additional paths to directories following the standard
 #	libXXX.so or libXXX.a naming scheme.  You can specify full paths
@@ -120,6 +120,8 @@ APP_VERSION =
 #	~/add-ons/kernel/drivers/dev/video/usb, so that your driver will appear at
 #	/dev/video/usb when loaded. Default is "misc".
 DRIVER_PATH = 
+
+INSTALL_DIR = /boot/apps
 
 ## include the makefile-engine
 include $(BUILDHOME)/etc/makefile-engine

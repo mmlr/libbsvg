@@ -1,11 +1,15 @@
-#include <Application.h>
-#include <Dragger.h>
-#include <Entry.h>
-#include <Window.h>
-#include <OS.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include <Application.h>
+#include <Entry.h>
+#include <Dragger.h>
 #include <List.h>
+#include <OS.h>
+#include <Window.h>
+
 #include "SVGView.h"
+
 
 // archive macros
 #define ADDREPADDON(x)	if (data->HasString("add_on")) data->ReplaceString("add_on", x); else data->AddString("add_on", x);

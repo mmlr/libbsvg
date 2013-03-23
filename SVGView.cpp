@@ -483,7 +483,7 @@ BSVGView::FindElements(const BString &_class, BSVGElement *elements[])
 		return 0;
 	}
 	
-	elements = new (BSVGElement *)[list.CountItems()];
+	elements = new BSVGElement *[list.CountItems()];
 	for (int i = 0; i < list.CountItems(); i++)
 		elements[i] = list.ItemAt(i);
 	

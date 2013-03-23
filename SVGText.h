@@ -4,6 +4,7 @@
 #include "SVGPath.h"
 #include "SVGDefs.h"
 
+class BSVGString;
 class BSVGTextSpan;
 class BSVGText;
 

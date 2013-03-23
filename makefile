@@ -121,5 +121,7 @@ APP_VERSION =
 #	/dev/video/usb when loaded. Default is "misc".
 DRIVER_PATH = 
 
+INSTALL_DIR = /boot/home/config/lib
+
 ## include the makefile-engine
 include $(BUILDHOME)/etc/makefile-engine
